@@ -1,208 +1,230 @@
-package com.github.abepralle.JData;
+package com.github.abepralle.JValue;
 
 import java.io.*;
 import java.util.*;
 
-public class JData
+public class JValue
 {
   // GLOBAL METHODS
-  static public ListValue list()
+  static public JValue list()
   {
     return new ListValue();
   }
 
-  static public Value logical( boolean value )
+  static public JValue logical( boolean value )
   {
     return value ? LogicalValue.true_value : LogicalValue.false_value;
   }
 
-  static public Value number( double value )
+  static public JValue number( double value )
   {
     return new NumberValue( value );
   }
 
-  static public Value null_value()
+  static public JValue null_value()
   {
     return NullValue.singleton;
   }
 
-  static public Value string( String value )
+  static public JValue string( String value )
   {
     if (value == null) return NullValue.singleton;
     return new StringValue( value );
   }
 
-  static public TableValue table()
+  static public JValue table()
   {
     return new TableValue();
   }
 
-  // INNER CLASSES
-  static public abstract class Value
+  // METHODS
+  public JValue add( JValue value )
   {
-    // METHODS
-    public boolean contains( String key )
-    {
-      return false;
-    }
-
-    public boolean contains( Value value )
-    {
-      return contains( value.toString() );
-    }
-
-    public int count()
-    {
-      return 0;
-    }
-
-    public boolean equals( Object other )
-    {
-      if (other == null) return this.isNull();
-
-      if ( !(other instanceof Value) ) return false;
-
-      return equals( (Value) other );
-    }
-
-    public boolean equals( Value other )
-    {
-      if (other == null) return false;
-      return other.toString().equals( this.toString() );
-    }
-
-    public Value get( String key )
-    {
-      return NullValue.singleton;
-    }
-
-    public Value get( int index )
-    {
-      return NullValue.singleton;
-    }
-
-    public Value get( Value index )
-    {
-      if (index.isNumber()) return get( index.toInt() );
-      else                  return get( index.toString() );
-    }
-
-    public boolean isList()
-    {
-      return false;
-    }
-
-    public boolean isLogical()
-    {
-      return false;
-    }
-
-    public boolean isNonNull()
-    {
-      return this != NullValue.singleton;
-    }
-
-    public boolean isNull()
-    {
-      return this == NullValue.singleton;
-    }
-
-    public boolean isNumber()
-    {
-      return false;
-    }
-
-    public boolean isString()
-    {
-      return false;
-    }
-
-    public boolean isTable()
-    {
-      return false;
-    }
-
-    public Value set( int index, Value value )
-    {
-      // No action
-      return this;
-    }
-
-    public Value set( int index, double value )
-    {
-      return set( index, JData.number(value) );
-    }
-
-    public Value set( int index, boolean value )
-    {
-      return set( index, JData.logical(value) );
-    }
-
-    public Value set( int index, String value )
-    {
-      return set( index, JData.string(value) );
-    }
-
-    public Value set( String key, Value value )
-    {
-      // No action
-      return this;
-    }
-
-    public Value set( String key, double value )
-    {
-      return set( key, JData.number(value) );
-    }
-
-    public Value set( String key, boolean value )
-    {
-      return set( key, JData.logical(value) );
-    }
-
-    public Value set( String key, String value )
-    {
-      return set( key, JData.string(value) );
-    }
-
-    public double toDouble()
-    {
-      return 0.0;
-    }
-
-    public int toInt()
-    {
-      return (int) toDouble();
-    }
-
-    public String toJSON()
-    {
-      return toString();
-    }
-
-    public boolean toLogical()
-    {
-      return false;
-    }
-
-    public String toString()
-    {
-      JSONWriter writer = new JSONWriter();
-      write( writer );
-      return writer.toString();
-    }
-
-    public void write( JSONWriter writer )
-    {
-      writer.print( toJSON() );
-    }
-
+    // No action
+    return this;
   }
 
-  static public class NullValue extends Value
+  public JValue add( double value )
+  {
+    return add( JValue.number(value) );
+  }
+
+  public JValue add( boolean value )
+  {
+    return add( JValue.logical(value) );
+  }
+
+  public JValue add( String value )
+  {
+    return add( JValue.string(value) );
+  }
+
+  public JValue clear()
+  {
+    // No action
+    return this;
+  }
+
+  public boolean contains( String key )
+  {
+    return false;
+  }
+
+  public boolean contains( JValue value )
+  {
+    return contains( value.toString() );
+  }
+
+  public int count()
+  {
+    return 0;
+  }
+
+  public boolean equals( Object other )
+  {
+    if (other == null) return this.isNull();
+
+    if ( !(other instanceof JValue) ) return false;
+
+    return equals( (JValue) other );
+  }
+
+  public boolean equals( JValue other )
+  {
+    if (other == null) return false;
+    return other.toString().equals( this.toString() );
+  }
+
+  public JValue get( String key )
+  {
+    return NullValue.singleton;
+  }
+
+  public JValue get( int index )
+  {
+    return NullValue.singleton;
+  }
+
+  public JValue get( JValue index )
+  {
+    if (index.isNumber()) return get( index.toInt() );
+    else                  return get( index.toString() );
+  }
+
+  public boolean isList()
+  {
+    return false;
+  }
+
+  public boolean isLogical()
+  {
+    return false;
+  }
+
+  public boolean isNonNull()
+  {
+    return this != NullValue.singleton;
+  }
+
+  public boolean isNull()
+  {
+    return this == NullValue.singleton;
+  }
+
+  public boolean isNumber()
+  {
+    return false;
+  }
+
+  public boolean isString()
+  {
+    return false;
+  }
+
+  public boolean isTable()
+  {
+    return false;
+  }
+
+  public JValue set( int index, JValue value )
+  {
+    // No action
+    return this;
+  }
+
+  public JValue set( int index, double value )
+  {
+    return set( index, JValue.number(value) );
+  }
+
+  public JValue set( int index, boolean value )
+  {
+    return set( index, JValue.logical(value) );
+  }
+
+  public JValue set( int index, String value )
+  {
+    return set( index, JValue.string(value) );
+  }
+
+  public JValue set( String key, JValue value )
+  {
+    // No action
+    return this;
+  }
+
+  public JValue set( String key, double value )
+  {
+    return set( key, JValue.number(value) );
+  }
+
+  public JValue set( String key, boolean value )
+  {
+    return set( key, JValue.logical(value) );
+  }
+
+  public JValue set( String key, String value )
+  {
+    return set( key, JValue.string(value) );
+  }
+
+  public double toDouble()
+  {
+    return 0.0;
+  }
+
+  public int toInt()
+  {
+    return (int) toDouble();
+  }
+
+  public String toJSON()
+  {
+    return toString();
+  }
+
+  public boolean toLogical()
+  {
+    return false;
+  }
+
+  public String toString()
+  {
+    JSONWriter writer = new JSONWriter();
+    write( writer );
+    return writer.toString();
+  }
+
+  public void write( JSONWriter writer )
+  {
+    writer.print( toJSON() );
+  }
+
+  static public class NullValue extends JValue
   {
     static NullValue singleton = new NullValue();
 
-    public boolean equals( Value other )
+    public boolean equals( JValue other )
     {
       if (other == null) return true;
       return other.isNull();
@@ -214,7 +236,7 @@ public class JData
     }
   }
 
-  static public class LogicalValue extends Value
+  static public class LogicalValue extends JValue
   {
     static LogicalValue true_value = new LogicalValue( true );
     static LogicalValue false_value = new LogicalValue( false );
@@ -226,7 +248,7 @@ public class JData
       this.value = value;
     }
 
-    public boolean equals( Value other )
+    public boolean equals( JValue other )
     {
       if (other == null) return (value == false);
       return other.toLogical() == value;
@@ -253,7 +275,7 @@ public class JData
     }
   }
 
-  static public class NumberValue extends Value
+  static public class NumberValue extends JValue
   {
     public double value;
 
@@ -262,7 +284,7 @@ public class JData
       this.value = value;
     }
 
-    public boolean equals( Value other )
+    public boolean equals( JValue other )
     {
       if (other == null) return (value == 0.0);
       return other.toDouble() == value;
@@ -295,7 +317,7 @@ public class JData
     }
   }
 
-  static public class StringValue extends Value
+  static public class StringValue extends JValue
   {
     public String value;
 
@@ -304,7 +326,7 @@ public class JData
       this.value = value;
     }
 
-    public boolean equals( Value other )
+    public boolean equals( JValue other )
     {
       if (other == null) return (value == null || value.equals(""));
       return other.toString().equals( toString() );
@@ -407,22 +429,35 @@ public class JData
     }
   }
 
-  static public class ListValue extends Value
+  static public class ListValue extends JValue
   {
-    public ArrayList<Value> data = new ArrayList<Value>();
+    public ArrayList<JValue> data = new ArrayList<JValue>();
+
+    public JValue add( JValue value )
+    {
+      if (value == null) value = NullValue.singleton;
+      data.add( value );
+      return this;
+    }
+
+    public JValue clear()
+    {
+      data.clear();
+      return this;
+    }
 
     public boolean contains( String value )
     {
       int size = data.size();
       for (int i=0; i<size; ++i)
       {
-        Value v = data.get( i );
+        JValue v = data.get( i );
         if (v.isString() && v.toString().equals(value)) return true;
       }
       return false;
     }
 
-    public boolean contains( Value value )
+    public boolean contains( JValue value )
     {
       int size = data.size();
       for (int i=0; i<size; ++i)
@@ -437,7 +472,7 @@ public class JData
       return data.size();
     }
 
-    public boolean equals( Value other )
+    public boolean equals( JValue other )
     {
       if (other == null) return false;
       int size = count();
@@ -452,7 +487,7 @@ public class JData
       return true;
     }
 
-    public Value get( String key )
+    public JValue get( String key )
     {
       try
       {
@@ -464,7 +499,7 @@ public class JData
       }
     }
 
-    public Value get( int index )
+    public JValue get( int index )
     {
       return data.get( index );
     }
@@ -474,14 +509,14 @@ public class JData
       return true;
     }
 
-    public ListValue set( int index, Value value )
+    public ListValue set( int index, JValue value )
     {
       if (index < 0 || index >= data.size()) return this;
       data.set( index, (value != null) ? value : NullValue.singleton );
       return this;
     }
 
-    public ListValue set( String index, Value value )
+    public ListValue set( String index, JValue value )
     {
       return set( ""+index, value );
     }
@@ -504,9 +539,15 @@ public class JData
     }
   }
 
-  static public class TableValue extends Value
+  static public class TableValue extends JValue
   {
-    public LinkedHashMap<String,Value> data = new LinkedHashMap<String,Value>();
+    public LinkedHashMap<String,JValue> data = new LinkedHashMap<String,JValue>();
+
+    public JValue clear()
+    {
+      data.clear();
+      return this;
+    }
 
     public boolean contains( String key )
     {
@@ -518,13 +559,13 @@ public class JData
       return data.size();
     }
 
-    public boolean equals( Value other )
+    public boolean equals( JValue other )
     {
       if (other == null) return false;
       if (count() != other.count()) return false;
       if ( !other.isTable() ) return false;
 
-      LinkedHashMap<String,Value> other_data = ((TableValue)other).data;
+      LinkedHashMap<String,JValue> other_data = ((TableValue)other).data;
       for (String key : data.keySet())
       {
         if ( !other_data.containsKey(key) ) return false;
@@ -539,19 +580,19 @@ public class JData
       return true;
     }
 
-    public Value get( String key )
+    public JValue get( String key )
     {
-      Value result = data.get( key );
+      JValue result = data.get( key );
       if (result != null) return result;
       else                return NullValue.singleton;
     }
 
-    public Value get( int index )
+    public JValue get( int index )
     {
       return get( ""+index );
     }
 
-    public TableValue set( String key, Value value )
+    public TableValue set( String key, JValue value )
     {
       data.put( key, (value != null) ? value : NullValue.singleton );
       return this;

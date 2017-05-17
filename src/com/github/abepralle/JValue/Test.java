@@ -1,4 +1,4 @@
-package com.github.abepralle.JData;
+package com.github.abepralle.JValue;
 
 import java.io.*;
 
@@ -12,8 +12,10 @@ public class Test
 {
   static public void main( String[] args )
   {
-    JData.Value list = JData.list();
+    JValue list = JValue.list();
+    list.add( (JValue.TableValue) null ).add( 3 ).add( "Four" ).add( true ).add( false ).add( JValue.table() );
     System.out.println( list );
+    System.out.println( list.get(0).isNull() );
 
     /*
     System.out.println( "JData Test" );
