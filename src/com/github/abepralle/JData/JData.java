@@ -6,6 +6,11 @@ import java.util.*;
 public class JData
 {
   // GLOBAL METHODS
+  static public ListValue list()
+  {
+    return new ListValue();
+  }
+
   static public Value logical( boolean value )
   {
     return value ? LogicalValue.true_value : LogicalValue.false_value;
@@ -21,8 +26,9 @@ public class JData
     return NullValue.singleton;
   }
 
-  static public StringValue string( String value )
+  static public Value string( String value )
   {
+    if (value == null) return NullValue.singleton;
     return new StringValue( value );
   }
 
@@ -70,6 +76,27 @@ public class JData
       return NullValue.singleton;
     }
 
+    public Value get( int index )
+    {
+      return NullValue.singleton;
+    }
+
+    public Value get( Value index )
+    {
+      if (index.isNumber()) return get( index.toInt() );
+      else                  return get( index.toString() );
+    }
+
+    public boolean isList()
+    {
+      return false;
+    }
+
+    public boolean isLogical()
+    {
+      return false;
+    }
+
     public boolean isNonNull()
     {
       return this != NullValue.singleton;
@@ -80,10 +107,61 @@ public class JData
       return this == NullValue.singleton;
     }
 
-    public Value set( String key, double value )
+    public boolean isNumber()
+    {
+      return false;
+    }
+
+    public boolean isString()
+    {
+      return false;
+    }
+
+    public boolean isTable()
+    {
+      return false;
+    }
+
+    public Value set( int index, Value value )
     {
       // No action
       return this;
+    }
+
+    public Value set( int index, double value )
+    {
+      return set( index, JData.number(value) );
+    }
+
+    public Value set( int index, boolean value )
+    {
+      return set( index, JData.logical(value) );
+    }
+
+    public Value set( int index, String value )
+    {
+      return set( index, JData.string(value) );
+    }
+
+    public Value set( String key, Value value )
+    {
+      // No action
+      return this;
+    }
+
+    public Value set( String key, double value )
+    {
+      return set( key, JData.number(value) );
+    }
+
+    public Value set( String key, boolean value )
+    {
+      return set( key, JData.logical(value) );
+    }
+
+    public Value set( String key, String value )
+    {
+      return set( key, JData.string(value) );
     }
 
     public double toDouble()
@@ -108,12 +186,12 @@ public class JData
 
     public String toString()
     {
-      Writer writer = new Writer();
-      writeJSON( writer );
+      JSONWriter writer = new JSONWriter();
+      write( writer );
       return writer.toString();
     }
 
-    public void writeJSON( Writer writer )
+    public void write( JSONWriter writer )
     {
       writer.print( toJSON() );
     }
@@ -154,6 +232,11 @@ public class JData
       return other.toLogical() == value;
     }
 
+    public boolean isLogical()
+    {
+      return true;
+    }
+
     public double toDouble()
     {
       return value ? 1.0 : 0.0;
@@ -183,6 +266,11 @@ public class JData
     {
       if (other == null) return (value == 0.0);
       return other.toDouble() == value;
+    }
+
+    public boolean isNumber()
+    {
+      return true;
     }
 
     public double toDouble()
@@ -222,6 +310,11 @@ public class JData
       return other.toString().equals( toString() );
     }
 
+    public boolean isString()
+    {
+      return true;
+    }
+
     public double toDouble()
     {
       try
@@ -244,13 +337,13 @@ public class JData
       return value;
     }
 
-    public void writeJSON( Writer writer )
+    public void write( JSONWriter writer )
     {
-      writeJSON( value, writer );
+      write( value, writer );
     }
 
     // GLOBAL METHODS
-    static public void writeJSON( String st, Writer writer )
+    static public void write( String st, JSONWriter writer )
     {
       if (st == null)
       {
@@ -314,13 +407,28 @@ public class JData
     }
   }
 
-  /*
   static public class ListValue extends Value
   {
     public ArrayList<Value> data = new ArrayList<Value>();
 
-    public boolean contains( String key )
+    public boolean contains( String value )
     {
+      int size = data.size();
+      for (int i=0; i<size; ++i)
+      {
+        Value v = data.get( i );
+        if (v.isString() && v.toString().equals(value)) return true;
+      }
+      return false;
+    }
+
+    public boolean contains( Value value )
+    {
+      int size = data.size();
+      for (int i=0; i<size; ++i)
+      {
+        if (data.get(i).equals(value)) return true;
+      }
       return false;
     }
 
@@ -331,42 +439,74 @@ public class JData
 
     public boolean equals( Value other )
     {
-      if (other == null) return (value == null || value.equals(""));
-      return other.toString().equals( toString() );
+      if (other == null) return false;
+      int size = count();
+      if (size != other.count()) return false;
+      if ( !other.isList() ) return false;
+
+      for (int i=0; i<size; ++i)
+      {
+        if ( !get(i).equals(other.get(i)) ) return false;
+      }
+
+      return true;
     }
 
     public Value get( String key )
     {
-      Value result = data.get( key );
-      if (result != null) return result;
-      else                return NullValue.singleton;
+      try
+      {
+        return get( Integer.parseInt(key) );
+      }
+      catch (Exception ignore)
+      {
+        return NullValue.singleton;
+      }
     }
 
-    public TableValue set( String key, double value )
+    public Value get( int index )
     {
-      data.put( key, number(value) );
+      return data.get( index );
+    }
+
+    public boolean isList()
+    {
+      return true;
+    }
+
+    public ListValue set( int index, Value value )
+    {
+      if (index < 0 || index >= data.size()) return this;
+      data.set( index, (value != null) ? value : NullValue.singleton );
       return this;
     }
 
-    public void writeJSON( Writer writer )
+    public ListValue set( String index, Value value )
     {
-      writer.print( '{' );
-      for (String key : data.keySet())
+      return set( ""+index, value );
+    }
+
+    public boolean toLogical()
+    {
+      return true;
+    }
+
+    public void write( JSONWriter writer )
+    {
+      writer.print( '[' );
+      int size = count();
+      for (int i=0; i<size; ++i)
       {
-        StringValue.writeJSON( key, writer );
-        writer.print( ':' );
-        Value value = data.get( key );
-        if (value == null) writer.print( "null" );
-        else               value.writeJSON( writer );
+        if (i > 0) writer.print( ',' );
+        get( i ).write( writer );
       }
-      writer.print( '}' );
+      writer.print( ']' );
     }
   }
-  */
 
   static public class TableValue extends Value
   {
-    public HashMap<String,Value> data = new HashMap<String,Value>();
+    public LinkedHashMap<String,Value> data = new LinkedHashMap<String,Value>();
 
     public boolean contains( String key )
     {
@@ -382,9 +522,21 @@ public class JData
     {
       if (other == null) return false;
       if (count() != other.count()) return false;
-      if ( !(other instanceof TableValue) ) return false;
+      if ( !other.isTable() ) return false;
 
-      return other.toString().equals( this.toString() );
+      LinkedHashMap<String,Value> other_data = ((TableValue)other).data;
+      for (String key : data.keySet())
+      {
+        if ( !other_data.containsKey(key) ) return false;
+        if ( !get(key).equals(other_data.get(key)) ) return false;
+      }
+
+      return true;
+    }
+
+    public boolean isTable()
+    {
+      return true;
     }
 
     public Value get( String key )
@@ -394,15 +546,15 @@ public class JData
       else                return NullValue.singleton;
     }
 
-    public TableValue set( String key, double value )
+    public Value get( int index )
     {
-      data.put( key, number(value) );
-      return this;
+      return get( ""+index );
     }
 
-    public double toDouble()
+    public TableValue set( String key, Value value )
     {
-      return 0.0;
+      data.put( key, (value != null) ? value : NullValue.singleton );
+      return this;
     }
 
     public boolean toLogical()
@@ -410,28 +562,26 @@ public class JData
       return true;
     }
 
-    public void writeJSON( Writer writer )
+    public void write( JSONWriter writer )
     {
       writer.print( '{' );
       for (String key : data.keySet())
       {
-        StringValue.writeJSON( key, writer );
+        StringValue.write( key, writer );
         writer.print( ':' );
-        Value value = data.get( key );
-        if (value == null) writer.print( "null" );
-        else               value.writeJSON( writer );
+        data.get( key ).write( writer );
       }
       writer.print( '}' );
     }
   }
 
   // UTILITY
-  static public class Writer
+  static public class JSONWriter
   {
     protected ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     protected OutputStreamWriter writer;
 
-    public Writer print( char ch )
+    public JSONWriter print( char ch )
     {
       if (writer == null) writer = new OutputStreamWriter( bytes );
       try
@@ -444,12 +594,12 @@ public class JData
       return this;
     }
 
-    public Writer print( int value )
+    public JSONWriter print( int value )
     {
       return print( ""+value );
     }
 
-    public Writer print( String st )
+    public JSONWriter print( String st )
     {
       if (writer == null) writer = new OutputStreamWriter( bytes );
       try

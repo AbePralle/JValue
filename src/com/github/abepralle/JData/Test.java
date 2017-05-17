@@ -12,19 +12,8 @@ public class Test
 {
   static public void main( String[] args )
   {
-    JData.Value n = JData.number( 5 );
-    System.out.println( n );
-    n = JData.string( "Testing" );
-    System.out.println( n );
-    n = JData.logical( true );
-    System.out.println( n );
-    n = JData.logical( false );
-    System.out.println( n );
-    n = JData.table();
-    n.set( "One", 1 );
-    System.out.println( n );
-    System.out.println( n.get("One") );
-    System.out.println( n.get("Two") );
+    JData.Value list = JData.list();
+    System.out.println( list );
 
     /*
     System.out.println( "JData Test" );
