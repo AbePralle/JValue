@@ -619,10 +619,10 @@ public class JValue
   // UTILITY
   static public class JSONWriter
   {
-    protected ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-    protected OutputStreamWriter writer;
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    OutputStreamWriter writer;
 
-    public JSONWriter print( char ch )
+    JSONWriter print( char ch )
     {
       if (writer == null) writer = new OutputStreamWriter( bytes );
       try
@@ -635,12 +635,12 @@ public class JValue
       return this;
     }
 
-    public JSONWriter print( int value )
+    JSONWriter print( int value )
     {
       return print( ""+value );
     }
 
-    public JSONWriter print( String st )
+    JSONWriter print( String st )
     {
       if (writer == null) writer = new OutputStreamWriter( bytes );
       try
@@ -672,6 +672,38 @@ public class JValue
       bytes.reset();
       writer = null;
       return result;
+    }
+  }
+
+  static public class JSONReader
+  {
+    StringBuilder data;
+    int count;
+    int position;
+
+    JSONReader( String source )
+    {
+      count = source.length();
+      data = new StringBuilder( count );
+      data.append( source );
+    }
+
+    JSONReader( File file )
+    {
+      try
+      {
+        data = new StringBuilder( (int) file.length() );
+        BufferedReader reader = new BufferedReader( new InputStreamReader( new FileInputStream(file.getPath()) ) );
+        for (int ch=reader.read(); ch!=-1; ch=reader.read())
+        {
+          data.append( (char) ch );
+        }
+        count = data.length();
+      }
+      catch (Exception err)
+      {
+        data = new StringBuilder();
+      }
     }
   }
 }

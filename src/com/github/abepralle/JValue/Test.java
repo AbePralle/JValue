@@ -17,6 +17,8 @@ public class Test
     System.out.println( list );
     System.out.println( list.get(0).isNull() );
 
+    System.out.println( new File("src/com/github/abepralle/JValue/JValue.java").getPath() );
+
     /*
     System.out.println( "JData Test" );
 
