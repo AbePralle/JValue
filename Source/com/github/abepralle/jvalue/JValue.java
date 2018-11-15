@@ -1198,14 +1198,14 @@ public class JValue implements Iterable<JValue>
     boolean consumeEOLs()
     {
       boolean consumed_any = false;
-      while (consume('\n')) consumed_any = true;
+      while (consume('\n') || consume('\r')) consumed_any = true;
       return consumed_any;
     }
 
     boolean consumeSpaces()
     {
       boolean consumed_any = false;
-      while (consume(' ')) consumed_any = true;
+      while (consume(' ') || consume('\t')) consumed_any = true;
       return consumed_any;
     }
 
