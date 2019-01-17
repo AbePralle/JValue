@@ -1,5 +1,5 @@
 # JValue
-v1.0.1 - November 15, 2018
+v1.0.2 - January 16, 2019
 
 ## Overview
 JValue is a lightweight, robust, and full-featured Java library for managing "JSON-style" data as well as serializing to and from JSON. It is adapted from the [Rogue Language](https://github.com/AbePralle/Rogue) "Value System".

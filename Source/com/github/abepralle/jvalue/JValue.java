@@ -750,10 +750,16 @@ public class JValue implements Iterable<JValue>
 
     public JValue apply( JValue.Processor fn )
     {
+      int write_index = 0;
       for (int i=0; i<data.size(); ++i)
       {
-        data.set( i, data.get(i).apply(fn) );
+        JValue processed_element = data.get(i).apply( fn );
+        if (processed_element != null && !processed_element.isUndefined())
+        {
+          data.set( write_index++, processed_element );
+        }
       }
+      while (data.size() > write_index) data.remove( data.size()-1 );
       return super.apply( fn );
     }
 
@@ -926,7 +932,17 @@ public class JValue implements Iterable<JValue>
       {
         JValue old_value = data.get( key );
         JValue new_value = old_value.apply( fn );
-        if (new_value != old_value) data.put( key, new_value );
+        if (new_value != old_value)
+        {
+          if (new_value == null || new_value.isUndefined())
+          {
+            data.remove( key );
+          }
+          else
+          {
+            data.put( key, new_value );
+          }
+        }
       }
       return super.apply( fn );
     }
